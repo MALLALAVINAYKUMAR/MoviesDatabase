@@ -106,12 +106,7 @@ movie-picture-pipeline/
 │   ├── frontend_app_running.png
 │   ├── backend_api_running.png
 │   ├── frontend_cd_success.png
-│   ├── backend_cd_success.png
-│   ├── frontend_ci_success.png
-│   ├── backend_ci_success.png
-│   ├── terraform_init.png
-│   ├── terraform_apply_output.png
-│   └── all_workflows.png
+│   └── backend_cd_success.png
 └── README.md
 ```
 
@@ -239,3 +234,4 @@ kubectl delete svc frontend backend
 cd setup/terraform
 terraform destroy -auto-approve
 ```
+

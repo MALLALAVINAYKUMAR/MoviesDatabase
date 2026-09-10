@@ -1,6 +1,6 @@
 # Project Deployment & Pipeline Evidence Proofs
 
-This directory contains the verification screenshots, logs, and live endpoint proofs for the **Movie Picture Pipeline** CI/CD project deployed to AWS EKS.
+This directory contains the verified screenshots and live endpoint evidence for the **Movie Picture Pipeline** CI/CD project in the [MALLALAVINAYKUMAR/MoviesDatabase](https://github.com/MALLALAVINAYKUMAR/MoviesDatabase) repository deployed to AWS EKS.
 
 ---
 
@@ -8,12 +8,12 @@ This directory contains the verification screenshots, logs, and live endpoint pr
 
 | Service | Public AWS LoadBalancer URL | Verification Status |
 | :--- | :--- | :--- |
-| **Frontend Web Application** | [http://afc41cd0a9bab41a7a963edf905ea6c6-243305316.us-east-1.elb.amazonaws.com](http://afc41cd0a9bab41a7a963edf905ea6c6-243305316.us-east-1.elb.amazonaws.com) | `HTTP 200 OK` (Live React UI with modern movie cards & modal) |
+| **Frontend Web Application** | [http://afc41cd0a9bab41a7a963edf905ea6c6-243305316.us-east-1.elb.amazonaws.com](http://afc41cd0a9bab41a7a963edf905ea6c6-243305316.us-east-1.elb.amazonaws.com) | `HTTP 200 OK` (Live React UI with responsive movie cards & modal) |
 | **Backend REST API** | [http://ab89cdcdaf2a14b8ea943919475bf685-1143139730.us-east-1.elb.amazonaws.com/movies](http://ab89cdcdaf2a14b8ea943919475bf685-1143139730.us-east-1.elb.amazonaws.com/movies) | `HTTP 200 OK` (Live Flask REST API returning movies JSON) |
 
 ---
 
-## 📸 Proof Screenshots & Verification
+## 📸 Proof Screenshots & Pipeline Verification
 
 ### 1. Frontend Web App Live on AWS EKS
 - **File**: `frontend_app_running.png`
@@ -45,7 +45,7 @@ This directory contains the verification screenshots, logs, and live endpoint pr
 
 ### 4. Frontend Continuous Deployment (CD) Pipeline Passing
 - **File**: `frontend_cd_success.png`
-- **Workflow Run**: [#34512336220](https://github.com/MALLALAVINAYKUMAR/MoviesDatabase/actions/runs/34512336220) / [#34512995698](https://github.com/MALLALAVINAYKUMAR/MoviesDatabase/actions/runs/34512995698)
+- **Workflow Run**: [#34512336220](https://github.com/MALLALAVINAYKUMAR/MoviesDatabase/actions/runs/34512336220)
 - **Description**: Successful execution of the automated Frontend CD pipeline on GitHub Actions:
   - `lint`: ESLint code standard check passed.
   - `test`: Jest unit tests passed.
@@ -55,28 +55,6 @@ This directory contains the verification screenshots, logs, and live endpoint pr
 
 ---
 
-### 5. Frontend Continuous Integration (CI) Pipeline Passing
-- **File**: `frontend_ci_success.png`
-- **Description**: GitHub Actions Frontend CI workflow executing `lint`, `test`, and `build` on pull requests.
-![Frontend CI Success](frontend_ci_success.png)
-
----
-
-### 6. Backend Continuous Integration (CI) Pipeline Passing
-- **File**: `backend_ci_success.png`
-- **Description**: GitHub Actions Backend CI workflow executing `lint`, `test`, and `build` on pull requests.
-![Backend CI Success](backend_ci_success.png)
-
----
-
-### 7. Terraform Infrastructure Provisioning
-- **Files**: `terraform_init.png`, `terraform_apply_output.png`
-- **Description**: Terraform initialization and successful execution provisioning the AWS VPC, Subnets, EKS Cluster (`cluster`), ECR repositories, and IAM roles.
-![Terraform Apply Output](terraform_apply_output.png)
-
----
-
-### 8. All GitHub Actions Workflows
-- **File**: `all_workflows.png`
-- **Description**: Overview of the GitHub Actions workflow tab with all automated pipelines green.
-![All Workflows](all_workflows.png)
+## ⚡ Continuous Integration (CI) Pipelines
+- **Backend CI Run**: [#34515280570](https://github.com/MALLALAVINAYKUMAR/MoviesDatabase/actions/runs/34515280570) (`Success`: lint, test, docker build)
+- **Frontend CI Run**: [#34515285275](https://github.com/MALLALAVINAYKUMAR/MoviesDatabase/actions/runs/34515285275) (`Success`: lint, test, docker build)
