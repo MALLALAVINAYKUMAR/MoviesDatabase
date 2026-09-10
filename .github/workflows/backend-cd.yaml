@@ -116,11 +116,8 @@ jobs:
           for s in ${SUBNETS}; do
             aws ec2 create-tags --resources "${s}" --tags Key=kubernetes.io/role/elb,Value=1 Key=kubernetes.io/cluster/${{ env.EKS_CLUSTER_NAME }},Value=shared --region ${{ env.AWS_REGION }} || true
           done
-
-      - name: Install kustomize
-        run: |
-          curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
-          sudo mv kustomize /usr/local/bin/
+      - name: Setup Kustomize
+        uses: imranismail/setup-kustomize@v3
 
       - name: Set image and deploy
         env:
