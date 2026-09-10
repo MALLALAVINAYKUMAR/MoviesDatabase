@@ -1,15 +1,26 @@
-# Movie Picture Pipeline — End-to-End CI/CD Project
+# Movie Picture Pipeline - End-to-End CI/CD Project
 
-[![Frontend CI](https://img.shields.io/badge/Frontend%20CI-Passing-brightgreen?logo=github-actions)](https://github.com/)
-[![Backend CI](https://img.shields.io/badge/Backend%20CI-Passing-brightgreen?logo=github-actions)](https://github.com/)
-[![Frontend CD](https://img.shields.io/badge/Frontend%20CD-Passing-brightgreen?logo=github-actions)](https://github.com/)
-[![Backend CD](https://img.shields.io/badge/Backend%20CD-Passing-brightgreen?logo=github-actions)](https://github.com/)
+[![Frontend CI](https://github.com/MALLALAVINAYKUMAR/MoviesDatabase/actions/workflows/frontend-ci.yaml/badge.svg)](https://github.com/MALLALAVINAYKUMAR/MoviesDatabase/actions/workflows/frontend-ci.yaml)
+[![Backend CI](https://github.com/MALLALAVINAYKUMAR/MoviesDatabase/actions/workflows/backend-ci.yaml/badge.svg)](https://github.com/MALLALAVINAYKUMAR/MoviesDatabase/actions/workflows/backend-ci.yaml)
+[![Frontend CD](https://github.com/MALLALAVINAYKUMAR/MoviesDatabase/actions/workflows/frontend-cd.yaml/badge.svg)](https://github.com/MALLALAVINAYKUMAR/MoviesDatabase/actions/workflows/frontend-cd.yaml)
+[![Backend CD](https://github.com/MALLALAVINAYKUMAR/MoviesDatabase/actions/workflows/backend-cd.yaml/badge.svg)](https://github.com/MALLALAVINAYKUMAR/MoviesDatabase/actions/workflows/backend-cd.yaml)
 
 A complete, production-grade automated CI/CD pipeline for a full-stack web application featuring:
 - **Frontend**: React 18, TypeScript, Axios, Prettier/ESLint, Jest.
 - **Backend**: Python 3.10, Flask, uWSGI, Flake8, Pytest.
 - **CI/CD Automation**: GitHub Actions (Linting, Unit Testing, Docker Image Building, ECR Publishing, EKS Deployments).
 - **Cloud Infrastructure**: AWS EKS (Kubernetes 1.32), Amazon ECR, AWS VPC, and AWS IAM provisioned via Terraform.
+
+---
+
+## 🌐 Live AWS Service Endpoints
+
+| Service | Public AWS LoadBalancer URL | Status |
+| :--- | :--- | :--- |
+| **Frontend Web Application** | [http://afc41cd0a9bab41a7a963edf905ea6c6-243305316.us-east-1.elb.amazonaws.com](http://afc41cd0a9bab41a7a963edf905ea6c6-243305316.us-east-1.elb.amazonaws.com) | `HTTP 200 OK` (Live React UI with modern movie cards & modal) |
+| **Backend REST API** | [http://ab89cdcdaf2a14b8ea943919475bf685-1143139730.us-east-1.elb.amazonaws.com/movies](http://ab89cdcdaf2a14b8ea943919475bf685-1143139730.us-east-1.elb.amazonaws.com/movies) | `HTTP 200 OK` (Live Flask REST API returning movies JSON) |
+
+> 📁 Detailed deployment proofs, logs, and screenshots are documented in the [evidence_Proof/](evidence_Proof/) directory.
 
 ---
 
@@ -90,8 +101,17 @@ movie-picture-pipeline/
 │   │   └── outputs.tf
 │   ├── init.sh                   # aws-auth ConfigMap RBAC script
 │   └── workspace-setup.sh        # Local developer setup script
-├── screenshots-of-outputs/       # Evidence screenshots for grading
-│   └── README.md
+├── evidence_Proof/               # Evidence screenshots and proof documentation
+│   ├── README.md
+│   ├── frontend_app_running.png
+│   ├── backend_api_running.png
+│   ├── frontend_cd_success.png
+│   ├── backend_cd_success.png
+│   ├── frontend_ci_success.png
+│   ├── backend_ci_success.png
+│   ├── terraform_init.png
+│   ├── terraform_apply_output.png
+│   └── all_workflows.png
 └── README.md
 ```
 
@@ -122,15 +142,15 @@ movie-picture-pipeline/
 - **Triggers**: `push` to `main` (paths: `frontend/**`), manual via `workflow_dispatch`.
 - **Jobs**:
   - `lint` & `test`: Run in parallel.
-  - `build-and-push`: Runs only after lint & test pass (`needs: [lint, test]`). Authenticates via `aws-actions/amazon-ecr-login@v2` with GitHub Secrets (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`). Injects `REACT_APP_MOVIE_API_URL` as build argument. Tags image with `github.sha` and pushes to AWS ECR `frontend` repository.
-  - `deploy`: Runs after `build-and-push`. Configures AWS credentials, runs `aws eks update-kubeconfig`, installs `kustomize`, sets image tag via `kustomize edit set image`, and applies manifests with `kubectl apply -f -`.
+  - `build-and-push`: Runs only after lint & test pass (`needs: [lint, test]`). Authenticates via `aws-actions/amazon-ecr-login@v2` with GitHub Secrets (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`). Injects `REACT_APP_MOVIE_API_URL` as build argument. Tags image with `github.sha` and pushes to AWS ECR `frontend` repository.
+  - `deploy`: Runs after `build-and-push`. Configures AWS credentials, runs `aws eks update-kubeconfig`, installs `kustomize` via `imranismail/setup-kustomize@v3`, sets image tag via `kustomize edit set image`, tags VPC subnets for AWS Load Balancers, and applies manifests with `kubectl apply -f -`.
 
 ### 4. Backend Continuous Deployment (`backend-cd.yaml`)
 - **Triggers**: `push` to `main` (paths: `backend/**`), manual via `workflow_dispatch`.
 - **Jobs**:
   - `lint` & `test`: Run in parallel.
   - `build-and-push`: Authenticates to AWS ECR, builds backend container, pushes to AWS ECR `backend` repository.
-  - `deploy`: Connects to EKS cluster `cluster`, sets image tag via `kustomize`, and executes `kustomize build | kubectl apply -f -`.
+  - `deploy`: Connects to EKS cluster `cluster`, sets image tag via `kustomize`, tags VPC subnets for AWS Load Balancers, and executes `kustomize build | kubectl apply -f -`.
 
 ---
 
@@ -144,8 +164,11 @@ movie-picture-pipeline/
 3. **Environment Variable Injection for React**:
    - React compiles static HTML/JS bundles that cannot read runtime OS environment variables in the browser.
    - `REACT_APP_MOVIE_API_URL` is passed as a Docker build argument during `docker build`, baking the live backend LoadBalancer URL directly into the frontend production build.
-4. **Zero Hardcoded Secrets**:
-   - AWS credentials (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`) are stored solely in GitHub Secrets, adhering to strict security compliance.
+4. **AWS STS Session Token & Subnet Tagging**:
+   - Dynamic support for temporary session credentials (`AWS_SESSION_TOKEN`) in GitHub Secrets.
+   - Automatic VPC subnet tagging (`kubernetes.io/role/elb=1`) ensured instant provisioning of Classic Elastic Load Balancers in AWS.
+5. **Zero Hardcoded Secrets**:
+   - AWS credentials (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`) are stored solely in GitHub Secrets, adhering to strict security compliance.
 
 ---
 
@@ -161,9 +184,9 @@ terraform apply -auto-approve
 Outputs obtained:
 - `cluster_name`: `cluster`
 - `cluster_version`: `1.32`
-- `frontend_ecr`: `<account-id>.dkr.ecr.us-east-1.amazonaws.com/frontend`
-- `backend_ecr`: `<account-id>.dkr.ecr.us-east-1.amazonaws.com/backend`
-- `github_action_user_arn`: `arn:aws:iam::<account-id>:user/github-action-user`
+- `frontend_ecr`: `604976185525.dkr.ecr.us-east-1.amazonaws.com/frontend`
+- `backend_ecr`: `604976185525.dkr.ecr.us-east-1.amazonaws.com/backend`
+- `github_action_user_arn`: `arn:aws:iam::604976185525:user/github-action-user`
 
 ### Step 2: Grant EKS Access to GitHub Actions User
 ```bash
@@ -174,28 +197,24 @@ chmod +x init.sh
 
 ### Step 3: Configure GitHub Repository Secrets
 Under your GitHub Repository > **Settings** > **Secrets and variables** > **Actions**, add:
-- `AWS_ACCESS_KEY_ID`: Access Key of `github-action-user`
-- `AWS_SECRET_ACCESS_KEY`: Secret Access Key of `github-action-user`
+- `AWS_ACCESS_KEY_ID`: AWS Access Key ID
+- `AWS_SECRET_ACCESS_KEY`: AWS Secret Access Key
+- `AWS_SESSION_TOKEN`: AWS Session Token (if using STS / temporary credentials)
+- `AWS_REGION`: `us-east-1`
+- `EKS_CLUSTER_NAME`: `cluster`
+- `REACT_APP_MOVIE_API_URL`: `http://ab89cdcdaf2a14b8ea943919475bf685-1143139730.us-east-1.elb.amazonaws.com`
 
 ### Step 4: Run Pipelines
 1. **Trigger Backend CD**:
-   Push to `main` branch or trigger via GitHub Actions tab manually.
-2. **Obtain Backend LoadBalancer URL**:
+   Push changes to `backend/**` or trigger `Backend Continuous Deployment` via GitHub Actions tab.
+2. **Verify Backend Endpoint**:
    ```bash
-   aws eks update-kubeconfig --name cluster --region us-east-1
-   kubectl get svc backend
+   curl http://ab89cdcdaf2a14b8ea943919475bf685-1143139730.us-east-1.elb.amazonaws.com/movies
    ```
-   Copy the `EXTERNAL-IP` URL.
-3. **Update Frontend API URL**:
-   Ensure `REACT_APP_MOVIE_API_URL` in `.github/workflows/frontend-cd.yaml` points to:
-   `http://<backend-external-ip>`
-4. **Trigger Frontend CD**:
-   Push to `main` branch or trigger via GitHub Actions tab manually.
-5. **Access Live Frontend**:
-   ```bash
-   kubectl get svc frontend
-   ```
-   Open `http://<frontend-external-ip>` in your web browser.
+3. **Trigger Frontend CD**:
+   Push changes to `frontend/**` or trigger `Frontend Continuous Deployment` via GitHub Actions tab.
+4. **Access Live Frontend**:
+   Open [http://afc41cd0a9bab41a7a963edf905ea6c6-243305316.us-east-1.elb.amazonaws.com](http://afc41cd0a9bab41a7a963edf905ea6c6-243305316.us-east-1.elb.amazonaws.com) in any web browser.
 
 ---
 
