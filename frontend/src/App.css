@@ -1,45 +1,188 @@
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+* {
+  box-sizing: border-box;
 }
 
-.movieItem {
-  cursor: pointer;
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f0f2f5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: #333333;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
+.app-root {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+/* Navbar matching Image 1 */
+.navbar {
+  background-color: #282c34;
+  padding: 30px 20px 24px 20px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-title {
+  margin: 0;
+  color: #ffffff;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.navbar-subtitle {
+  margin-top: 10px;
+  color: #8da2b5;
+  font-size: 0.95rem;
+}
+
+/* Main Container */
+.main-content {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 24px;
+  width: 100%;
+}
+
+/* Responsive Grid matching Image 1 */
+.movie-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+@media (max-width: 960px) {
+  .movie-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .movie-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Movie Card matching Image 1 */
+.movie-card {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 24px 24px 20px 24px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.movie-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
+}
+
+.movie-card-title {
+  margin: 0 0 6px 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.movie-card-year {
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.movie-card-description {
+  margin: 0 0 20px 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: #4b5563;
+  flex-grow: 1;
+}
+
+.movie-card-rating {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ea580c;
+}
+
+/* Modal details */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  z-index: 1000;
+  padding: 20px;
 }
 
-.App-link {
-  color: #61dafb;
+.modal-container {
+  background: #ffffff;
+  border-radius: 10px;
+  max-width: 550px;
+  width: 100%;
+  padding: 32px;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  animation: fadeIn 0.2s ease;
 }
 
-@keyframes App-logo-spin {
+.modal-close-button {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  background: none;
+  border: none;
+  font-size: 1.75rem;
+  line-height: 1;
+  color: #9ca3af;
+  cursor: pointer;
+}
+
+.modal-close-button:hover {
+  color: #111827;
+}
+
+.movie-detail-title {
+  margin: 0 0 8px 0;
+  font-size: 1.5rem;
+  color: #111827;
+}
+
+.movie-detail-year {
+  margin: 0 0 16px 0;
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+.movie-detail-desc {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #374151;
+  margin-bottom: 20px;
+}
+
+.movie-detail-rating {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ea580c;
+}
+
+@keyframes fadeIn {
   from {
-    transform: rotate(0deg);
+    opacity: 0;
+    transform: scale(0.96);
   }
-
   to {
-    transform: rotate(360deg);
+    opacity: 1;
+    transform: scale(1);
   }
-}
+}
