@@ -12,7 +12,7 @@ env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: frontend
   EKS_CLUSTER_NAME: cluster
-  REACT_APP_MOVIE_API_URL: http://a8f6169b514cc450b98e46575f5745ca-2075685538.us-east-1.elb.amazonaws.com
+  REACT_APP_MOVIE_API_URL: ${{ secrets.REACT_APP_MOVIE_API_URL || 'http://localhost:5000' }}
 
 jobs:
   lint:
@@ -63,6 +63,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to ECR
@@ -75,7 +76,7 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
         run: |
           docker build \
-            --build-arg=REACT_APP_MOVIE_API_URL=${{ env.REACT_APP_MOVIE_API_URL }} \
+            --build-arg=REACT_APP_MOVIE_API_URL="${{ env.REACT_APP_MOVIE_API_URL }}" \
             --tag=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
 
       - name: Push image to ECR
@@ -98,6 +99,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to ECR
@@ -106,6 +108,15 @@ jobs:
 
       - name: Update kubeconfig
         run: aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+
+      - name: Tag VPC subnets for AWS Load Balancer
+        run: |
+          VPC_ID=$(aws eks describe-cluster --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }} --query 'cluster.resourcesVpcConfig.vpcId' --output text)
+          SUBNETS=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=${VPC_ID}" --region ${{ env.AWS_REGION }} --query 'Subnets[*].SubnetId' --output text)
+          echo "Tagging subnets in VPC ${VPC_ID}: ${SUBNETS}"
+          for s in ${SUBNETS}; do
+            aws ec2 create-tags --resources "${s}" --tags Key=kubernetes.io/role/elb,Value=1 Key=kubernetes.io/cluster/${{ env.EKS_CLUSTER_NAME }},Value=shared --region ${{ env.AWS_REGION }} || true
+          done
 
       - name: Install kustomize
         run: |
