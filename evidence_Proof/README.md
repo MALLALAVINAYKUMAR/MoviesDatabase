@@ -55,6 +55,17 @@ This directory contains verified screenshots and live endpoint evidence for the 
 
 ---
 
+### 5. All GitHub Actions Workflows Passing
+- **File**: `all_workflows.png`
+- **Description**: Complete overview of the GitHub Actions **Actions** dashboard in `MALLALAVINAYKUMAR/MoviesDatabase` demonstrating all pipelines passing with green checkmarks:
+  - `Frontend Continuous Deployment` (#6: Success)
+  - `Backend Continuous Deployment` (#17: Success)
+  - `Frontend Continuous Integration` (#2: Success)
+  - `Backend Continuous Integration` (#3: Success)
+![All Workflows Passing](all_workflows.png)
+
+---
+
 ## ⚡ Continuous Integration (CI) Pipelines
 - **Backend CI Run**: [#34515280570](https://github.com/MALLALAVINAYKUMAR/MoviesDatabase/actions/runs/34515280570) (`Success`: lint, test, docker build)
 - **Frontend CI Run**: [#34515285275](https://github.com/MALLALAVINAYKUMAR/MoviesDatabase/actions/runs/34515285275) (`Success`: lint, test, docker build)

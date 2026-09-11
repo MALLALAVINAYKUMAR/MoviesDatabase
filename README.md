@@ -106,7 +106,8 @@ movie-picture-pipeline/
 │   ├── frontend_app_running.png
 │   ├── backend_api_running.png
 │   ├── frontend_cd_success.png
-│   └── backend_cd_success.png
+│   ├── backend_cd_success.png
+│   └── all_workflows.png
 └── README.md
 ```
 
