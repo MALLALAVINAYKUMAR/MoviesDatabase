@@ -1,6 +1,6 @@
 # Project Deployment & Pipeline Evidence Proofs
 
-This directory contains the verified screenshots and live endpoint evidence for the **Movie Picture Pipeline** CI/CD project in the [MALLALAVINAYKUMAR/MoviesDatabase](https://github.com/MALLALAVINAYKUMAR/MoviesDatabase) repository deployed to AWS EKS.
+This directory contains verified screenshots and live endpoint evidence for the **Movie Picture Pipeline** CI/CD project in the [MALLALAVINAYKUMAR/MoviesDatabase](https://github.com/MALLALAVINAYKUMAR/MoviesDatabase) repository deployed to AWS EKS.
 
 ---
 
@@ -33,24 +33,24 @@ This directory contains the verified screenshots and live endpoint evidence for 
 
 ### 3. Backend Continuous Deployment (CD) Pipeline Passing
 - **File**: `backend_cd_success.png`
-- **Workflow Run**: [#34513408445](https://github.com/MALLALAVINAYKUMAR/MoviesDatabase/actions/runs/34513408445)
+- **Latest Workflow Run**: [#34564112184](https://github.com/MALLALAVINAYKUMAR/MoviesDatabase/actions/runs/34564112184)
 - **Description**: Successful execution of the automated Backend CD pipeline on GitHub Actions:
   - `lint`: Python 3.10 flake8 style check passed.
   - `test`: Pytest unit test suite passed.
-  - `build-and-push`: Built Docker image and pushed to Amazon ECR (`backend`).
-  - `deploy`: Updated EKS kubeconfig, configured Kustomize, and rolled out to Amazon EKS cluster `cluster`.
+  - `build-and-push`: Built Docker image and pushed to Amazon ECR (`backend`) with commit SHA tag.
+  - `deploy`: Updated EKS kubeconfig, configured Kustomize, rolled out to EKS cluster `cluster`, and verified running image in cluster log.
 ![Backend CD Success](backend_cd_success.png)
 
 ---
 
 ### 4. Frontend Continuous Deployment (CD) Pipeline Passing
 - **File**: `frontend_cd_success.png`
-- **Workflow Run**: [#34512336220](https://github.com/MALLALAVINAYKUMAR/MoviesDatabase/actions/runs/34512336220)
+- **Latest Workflow Run**: [#34565171672](https://github.com/MALLALAVINAYKUMAR/MoviesDatabase/actions/runs/34565171672)
 - **Description**: Successful execution of the automated Frontend CD pipeline on GitHub Actions:
   - `lint`: ESLint code standard check passed.
   - `test`: Jest unit tests passed.
-  - `build-and-push`: Injected backend API URL, built container, and pushed to Amazon ECR (`frontend`).
-  - `deploy`: Rolled out frontend service and deployment to Amazon EKS cluster `cluster`.
+  - `build-and-push`: Injected backend API URL, built container, and pushed to Amazon ECR (`frontend`) with commit SHA tag.
+  - `deploy`: Rolled out frontend service and deployment to EKS cluster `cluster`, and verified running image in cluster log.
 ![Frontend CD Success](frontend_cd_success.png)
 
 ---
