@@ -127,3 +127,10 @@ jobs:
         run: |
           kustomize edit set image frontend=$ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG
           kustomize build | kubectl apply -f -
+          kubectl rollout restart deployment/frontend || true
+          kubectl rollout status deployment/frontend --timeout=180s || true
+          echo "=== VERIFY DEPLOYED IMAGE IN CLUSTER ==="
+          kubectl get deployment frontend -o jsonpath='{.spec.template.spec.containers[0].image}'
+          echo ""
+          kubectl get pods -l app=frontend -o wide || true
+          kubectl get svc frontend -o wide || true
